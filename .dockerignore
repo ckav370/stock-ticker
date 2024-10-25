@@ -1,0 +1,11 @@
+.gitignore
+.github
+.dockerignore
+.releaserc
+README.md
+Dockerfile
+package.json
+package-lock.json
+docs
+docker
+internal/scripts
