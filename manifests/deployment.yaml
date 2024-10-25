@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-ticker
+  namespace: stock-ticker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: stock-ticker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: stock-ticker
+    spec:
+      containers:
+        - env:
+            - name: SYMBOL
+              value: ASFT
+            - name: NDAYS
+              value: "7"
+            - name: REDIS_ADDR
+              value: REDIS_ADDR=redis.stock-ticker.svc.cluster.local:6379
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: API_KEY
+                  name: secrets
+          image: cblain370/stock-ticker:latest
+          imagePullPolicy: IfNotPresent
+          name: stock-ticker
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+              memory: 500Mi
+            requests:
+              cpu: 500m
+              memory: 500Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: stock-ticker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          args: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+      volumes:
+        - name: redis-data
+          emptyDir: {} 
+
