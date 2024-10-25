@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster
+    external-dns.alpha.kubernetes.io/hostname: stock-ticker.mydomain.com
+    external-dns/selector: external-dns
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+  name: stock-ticker
+  namespace: stock-ticker
+spec:
+  ingressClassName: public-nignx
+  rules:
+    - host: stock-ticker.mydomain.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: stock-ticker
+                port:
+                  number: 3000
+            path: /stock
+            pathType: Exact
+  tls:
+    - hosts:
+        - stock-ticker.mydomain.com
+      secretName: stock-ticker-tls
