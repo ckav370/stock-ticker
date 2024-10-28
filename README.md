@@ -136,3 +136,4 @@ There are severval important factors that need to be considered before releasing
 * Metrics. There are currently no metrics and the service is not configured to emit metrics. These can also be used to configure alerts and dashboards which can be used to monitor the application in production
 * The manifests should not be applied manually using kubectl in production and a CD process should be used to ensure no single user has edit access to production enviroments. Examples of a CD solution could be ArgoCD, Github Actions, Flux etc
 * The application should be configured to throttle the application on excessive requests to ensure the application cannot be overloaded and vulnerable to attacks such as DDoS
+* Unit tests at a minimum in CI worklfow, further tests such as load tests and in a perfect world, chaos testing
